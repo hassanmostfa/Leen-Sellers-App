@@ -6,14 +6,14 @@ import avatar from '../assets/images/avatars/avatar03.jpg';
 import SarFlag from '../assets/images/avatars/sr-flag.png';
 const More = ({ navigation}) => {
   const menuItems = [
-    { title: 'الرئيسية', icon: 'home-outline' },
-    { title: 'صفحات التواصل', icon: 'account-outline' },
-    { title: 'الفريق', icon: 'account-group-outline' },
-    { title: 'مواعيد العمل', icon: 'calendar-month-outline' },
-    { title: 'الخدمات المنزلية', icon: 'basket-outline' },
-    { title: 'خدمات المقر', icon: 'store-outline' },
-    { title: 'الإعدادات', icon: 'cog-outline' },
-    { title: 'طرق الدفع', icon: 'credit-card-outline' },
+    { title: 'الرئيسية', icon: 'home-outline' , link: 'Home'},
+    { title: 'صفحات التواصل', icon: 'account-outline' , link: 'Pages'},
+    { title: 'الخدمات المنزلية', icon: 'basket-outline' , link: 'HomeServices'},
+    { title: 'خدمات المقر', icon: 'store-outline' , link: 'StudioServices'},
+    { title: 'مواعيد العمل', icon: 'calendar-month-outline' , link: 'Timetable'},
+    { title: 'كوبونات الخصم', icon: 'gift-outline' , link: 'Coupons'},
+    { title: 'الإعدادات', icon: 'cog-outline' , link: 'Settings'},
+    { title: 'طرق الدفع', icon: 'credit-card-outline' , link: 'PaymentMethods'},
   ];
 
   return (
@@ -46,7 +46,7 @@ const More = ({ navigation}) => {
             
       <View style={styles.grid}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.card}>
+          <TouchableOpacity key={index} onPress={() => navigation.navigate(item.link)} style={styles.card}>
             <Icon name={item.icon} size={24} color="#151E1D" />
             <Text style={styles.text}>{item.title}</Text>
           </TouchableOpacity>

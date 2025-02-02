@@ -26,7 +26,7 @@ const TapNavigation = ({ navigation }) => {
     { icon: 'store-plus-outline', text: 'اضافة خدمة بالمقر', onPress: () => navigation.navigate('AddStudioService') },
     { icon: 'account-multiple-plus', text: 'اضافة الموظفين', onPress: () => navigation.navigate('AddEmployee') },
     { icon: 'gift-outline', text: 'اضافة كوبون خصم', onPress: () => navigation.navigate('AddCoupon') },
-    { icon: 'movie-plus-outline', text: 'اضافة فيديو', onPress: () => navigation.navigate('Reels') },
+    { icon: 'movie-plus-outline', text: 'اضافة فيديو', onPress: () => navigation.navigate('UploadReel') },
     { icon: 'image-plus', text: 'اضافة صورة', onPress: () => navigation.navigate('Gallery') },
   ];
 

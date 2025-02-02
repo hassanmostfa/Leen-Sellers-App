@@ -24,6 +24,7 @@ import ShowHomeBooking from './screens/bookings/ShowHomeBooking';
 import ShowStudioBooking from './screens/bookings/ShowStudioBooking';
 import Gallery from './screens/Media/Gallery';
 import Reels from './screens/Media/Reels';
+import UploadReel from './screens/Media/UploadReel';
 import Coupons from './screens/coupons/Coupons';
 import AddCoupon from './screens/coupons/AddCoupon';
 import UpdateCoupon from './screens/coupons/UpdateCoupon';
@@ -75,6 +76,7 @@ const [loaded] = useFonts({
         <Stack.Screen name="ShowStudioBooking" component={ShowStudioBooking} />
         <Stack.Screen name="Gallery" component={Gallery} />
         <Stack.Screen name="Reels" component={Reels} />
+        <Stack.Screen name="UploadReel" component={UploadReel} />
         <Stack.Screen name="Coupons" component={Coupons} />
         <Stack.Screen name="AddCoupon" component={AddCoupon} />
         <Stack.Screen name="UpdateCoupon" component={UpdateCoupon} />

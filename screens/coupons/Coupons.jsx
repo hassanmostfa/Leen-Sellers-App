@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import CouponCard from '../../components/CouponCard';
-const Coupons = ({ navigation}) => {
+
+const Coupons = ({ navigation }) => {
   const [coupons, setCoupons] = useState([]); // Store coupons
   const [loading, setLoading] = useState(true); // Loading state
 
@@ -27,7 +27,7 @@ const Coupons = ({ navigation}) => {
       });
       const data = await response.json();
       if (response.ok) {
-        setCoupons(data.data|| []); // Store coupons
+        setCoupons(data.data || []); // Store coupons
       } else {
         Alert.alert('Error', data.message || 'Failed to fetch coupons');
       }
@@ -43,30 +43,67 @@ const Coupons = ({ navigation}) => {
     fetchCoupons();
   }, []);
 
+  // Format date to "DD/MM/YYYY"
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+  };
 
+  // Render a single row for the coupon table
+  const renderItem = ({ item }) => (
+    <View style={styles.row}>
+      <Text style={[styles.cell , { color: '#56766F' }]}>{item.code}</Text>
+      <Text style={styles.cell}>{item.discount_value}%</Text>
+      <Text style={styles.cell}>{formatDate(item.expires_at)}</Text>
+      <Text style={styles.cell}>{item.usage_limit}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-        {/* Header */}
-              <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Icon name="arrow-left" size={24} color="#ffffff" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>قسائم الخصم (الكوبونات)</Text>
-                <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddCoupon')}>
-                  <Icon name="plus" size={24} color="#ffffff" />
-                </TouchableOpacity>
-              </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={styles.headerTitle}>كل الكوبونات</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="chevron-right" size={28} color="#000" />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('AddCoupon')} style={styles.addButton}>
+          <Text style={{ fontSize: 16, color: '#fff', fontFamily: 'AlmaraiBold' }}>إضافة كوبون</Text>
+          <Icon name="plus" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
+      {/* Title and Description */}
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.title}>معاملات الدفع</Text>
+        <Text style={styles.description}>
+        تتيح لك هذه الصفحة إنشاء كوبونات وعروض خاصة لجذب المزيد من 
+        العملاء وإدارة الكوبونات الحالية بسهولة.        </Text>
+      </View>
+
+      {/* Loading Indicator */}
       {loading ? (
-        <ActivityIndicator size="large" color="#2f3e3b" style={styles.loader} />
+        <ActivityIndicator size="large" color="#435E58" style={styles.loader} />
       ) : (
-        <FlatList
-          data={coupons}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <CouponCard item={item} navigation={navigation} />}
-          contentContainerStyle={styles.listContainer}
-        />
+        <View style={styles.tableContainer}>
+          {/* Table Header */}
+          <View style={styles.tableHeader}>
+            <Text style={styles.headerCell}>رمز الكوبون</Text>
+            <Text style={styles.headerCell}>الخصم</Text>
+            <Text style={styles.headerCell}>تاريخ الانتهاء</Text>
+            <Text style={styles.headerCell}>حد الاستخدام</Text>
+          </View>
+
+          {/* Table Body */}
+          <FlatList
+            data={coupons}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderItem}
+          />
+        </View>
       )}
     </View>
   );
@@ -75,14 +112,29 @@ const Coupons = ({ navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#ffffff',
   },
   header: {
+    flexDirection: 'row-reverse', // Title on the right, icon on the left
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingTop: 50,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E7E7E7',
+  },
+  headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 15,
-    color: '#2f3e3b',
+    color: '#000000',
+    fontFamily: 'AlmaraiBold',
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#435E58',
+    padding: 10,
+    borderRadius: 5,
   },
   loader: {
     flex: 1,
@@ -90,32 +142,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  listContainer: {
+  descriptionContainer: {
+    padding: 20,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontFamily: 'AlmaraiBold',
+    color: '#333',
+    marginBottom: 5,
+    textAlign: 'right',
+  },
+  description: {
+    fontSize: 14,
+    fontFamily: 'AlmaraiRegular',
+    color: '#B0B0B0',
+    textAlign: 'right',
+  },
+  tableContainer: {
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
-  
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#2f3e3b',
-    paddingHorizontal: 15,
+  tableHeader: {
+    flexDirection: 'row-reverse', // Align right-to-left
+    borderBottomWidth: 1,
+    borderBottomColor: '#e7e7e7',
+    borderTopWidth: 1,
+    borderTopColor: '#e7e7e7',
     paddingVertical: 10,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: 5,
+    marginBottom: 10,
   },
-  headerTitle: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: 'bold',
+  headerCell: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'AlmaraiBold',
+    color: '#333',
   },
-  addButton: {
-    padding: 5,
+  row: {
+    flexDirection: 'row-reverse', // Align right-to-left
+    borderBottomWidth: 1,
+    borderBottomColor: '#e7e7e7',
+    paddingVertical: 10,
+  },
+  cell: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: 'AlmaraiRegular',
+    color: '#333',
   },
 });
 
