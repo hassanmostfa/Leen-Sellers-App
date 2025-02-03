@@ -27,7 +27,7 @@ const TapNavigation = ({ navigation }) => {
     { icon: 'account-multiple-plus', text: 'اضافة الموظفين', onPress: () => navigation.navigate('AddEmployee') },
     { icon: 'gift-outline', text: 'اضافة كوبون خصم', onPress: () => navigation.navigate('AddCoupon') },
     { icon: 'movie-plus-outline', text: 'اضافة فيديو', onPress: () => navigation.navigate('UploadReel') },
-    { icon: 'image-plus', text: 'اضافة صورة', onPress: () => navigation.navigate('Gallery') },
+    { icon: 'image-plus', text: 'اضافة صورة', onPress: () => navigation.navigate('UploadImage') },
   ];
 
   // Links for the Bookings modal
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   modalLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15, // Space between links
+    paddingVertical: 10, // Space between links
   },
   iconBackground: {
     backgroundColor: '#DFE8E5', // Light green background

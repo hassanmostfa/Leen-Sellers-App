@@ -55,7 +55,8 @@ const ChatCard = ({ item, navigation }) => {
       );
       if (response.status === 200 && response.data) {
         const chatRoomId = response.data.data.id; // Assuming the API returns `chatRoomId`
-        navigation.navigate('ChatRoom', chatRoomId);
+        const customer = response.data.data.customer;
+        navigation.navigate('ChatRoom', { chatRoomId, customer });
       } else {
         Alert.alert('Error', 'Unable to create or resume the chat room.');
       }

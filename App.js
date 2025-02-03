@@ -23,6 +23,7 @@ import StudioBookings from './screens/bookings/StudioBookings';
 import ShowHomeBooking from './screens/bookings/ShowHomeBooking';
 import ShowStudioBooking from './screens/bookings/ShowStudioBooking';
 import Gallery from './screens/Media/Gallery';
+import UploadImage from './screens/Media/UploadImage';
 import Reels from './screens/Media/Reels';
 import UploadReel from './screens/Media/UploadReel';
 import Coupons from './screens/coupons/Coupons';
@@ -75,6 +76,7 @@ const [loaded] = useFonts({
         <Stack.Screen name="StudioBookings" component={StudioBookings} />
         <Stack.Screen name="ShowStudioBooking" component={ShowStudioBooking} />
         <Stack.Screen name="Gallery" component={Gallery} />
+        <Stack.Screen name="UploadImage" component={UploadImage} />
         <Stack.Screen name="Reels" component={Reels} />
         <Stack.Screen name="UploadReel" component={UploadReel} />
         <Stack.Screen name="Coupons" component={Coupons} />
