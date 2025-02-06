@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const StudioServiceCard = ({ item, navigation }) => {
   const handleShow = () => {
-    navigation.navigate('ShowStudioService', { item }); // Navigate to route with item data
+    navigation.navigate('ShowHomeService', { item });
   };
 
   const handleDelete = async () => {
@@ -12,15 +13,12 @@ const StudioServiceCard = ({ item, navigation }) => {
       'تأكيد الحذف',
       'هل أنت متأكد أنك تريد حذف هذه الخدمة؟',
       [
-        {
-          text: 'إلغاء',
-          style: 'cancel',
-        },
+        { text: 'إلغاء', style: 'cancel' },
         {
           text: 'حذف',
           onPress: async () => {
             try {
-              const authToken = await AsyncStorage.getItem('authToken'); // Get token from localStorage
+              const authToken = await AsyncStorage.getItem('authToken');
               const response = await fetch(
                 `https://leen-app.com/public/api/seller/studioServices/destroy/${item.id}`,
                 {
@@ -33,14 +31,13 @@ const StudioServiceCard = ({ item, navigation }) => {
               );
 
               if (response.ok) {
-                Alert.alert("نجاح",'تم الحذف بنجاح',{text: 'حسناً'}
-                );
+                Alert.alert('نجاح', 'تم الحذف بنجاح');
                 navigation.navigate('StudioServices');
               } else {
-                Alert.alert('خطأ','حدث خطأ أثناء الحذف');
+                Alert.alert('خطأ', 'حدث خطأ أثناء الحذف');
               }
             } catch (error) {
-              Alert.alert('خطأ','حدث خطأ أثناء الحذف', error.message);
+              Alert.alert('خطأ', 'حدث خطأ أثناء الحذف', error.message);
             }
           },
           style: 'destructive',
@@ -51,16 +48,14 @@ const StudioServiceCard = ({ item, navigation }) => {
   };
 
   return (
-    <View style={[styles.card, { direction: 'rtl' }]}>
+    <View style={[styles.card, { direction: 'rtl' }]}>  
       {item.discount > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{item.percentage}% خصم</Text>
+        <View style={styles.badgeContainer}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{item.percentage}% خصم</Text>
+          </View>
         </View>
       )}
-      <Image
-        source={{ uri: item.sub_category.image }}
-        style={styles.image}
-      />
       <View style={styles.detailsContainer}>
         <Text style={styles.serviceName}>{item.name}</Text>
         <Text style={styles.servicePrice}>السعر : {item.price} ريال</Text>
@@ -72,12 +67,13 @@ const StudioServiceCard = ({ item, navigation }) => {
         </View>
         <Text style={styles.servicePrice}>نوع الحجز : {item.booking_status === 'immediate' ? 'فوري' : 'بموعد مسبق'}</Text>
       </View>
+
       <View style={styles.actionContainer}>
         <TouchableOpacity style={styles.actionButton} onPress={handleShow}>
           <Icon name="eye" size={24} color="#2f3e3b" />
           <Text style={styles.actionText}>عرض</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={()=> navigation.navigate('UpdateStudioService', { item })}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('UpdateStudioService', { item })}>
           <Icon name="pencil" size={24} color="#f08b47" />
           <Text style={styles.actionText}>تعديل</Text>
         </TouchableOpacity>
@@ -92,45 +88,50 @@ const StudioServiceCard = ({ item, navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#fff',
     borderRadius: 10,
     margin: 10,
     overflow: 'hidden',
-    elevation: 3,
     padding: 10,
-    direction: 'rtl',
+    position: 'relative',
+    borderRightWidth: 7,
+    borderRightColor: '#435E58',
+  },
+  badgeContainer: {
+    position: 'absolute',
+    top: '8%',
+    left: '88%',
+    transform: [{ translateX: -30 }, { translateY: -15 }],
   },
   badge: {
-    position: 'absolute',
-    top: 180,
-    left: 10,
-    backgroundColor: '#2f3e3b',
+    backgroundColor: '#435E58',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 15,
-    zIndex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeText: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: 'bold',
-  },
-  image: {
-    width: '100%',
-    height: 150,
+    fontFamily: 'AlmaraiBold',
   },
   detailsContainer: {
     padding: 10,
   },
   serviceName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontFamily: 'AlmaraiBold',
     marginBottom: 5,
   },
   servicePrice: {
     fontSize: 16,
     color: '#555',
     marginVertical: 5,
+    fontFamily: 'AlmaraiRegular',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -140,10 +141,12 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 14,
     marginLeft: 5,
+    fontFamily: 'AlmaraiRegular',
   },
   actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'column',
+    gap: 10,
+    alignItems: 'center',
     padding: 10,
   },
   actionButton: {
@@ -154,6 +157,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 14,
     marginTop: 5,
+    fontFamily: 'AlmaraiRegular',
   },
 });
 

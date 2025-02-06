@@ -14,10 +14,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Header from '../../components/Header';
-
+import CategorySelector from '../../components/services/shared/CategorySelector';
+import SuccessModal from '../../components/modals/Success';
 const UpdateHomeService = ({ route, navigation }) => {
     const { item } = route.params; // Extract the passed item
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+
 
     const [formData, setFormData] = useState({
       name: item?.name || '',
@@ -146,9 +148,7 @@ const UpdateHomeService = ({ route, navigation }) => {
         service_details: formData.service_details,
         sub_category_id: parseInt(formData.sub_category_id, 10),
       };
-    
-      console.log('Payload to send: ', JSON.stringify(payload));
-    
+     
       try {
         const token = await AsyncStorage.getItem('authToken');
         const response = await fetch(`https://leen-app.com/public/api/seller/homeServices/update/${item.id}`, {
@@ -161,7 +161,7 @@ const UpdateHomeService = ({ route, navigation }) => {
         });
     
         const result = await response.json();
-        Alert.alert('تم التحديث', 'تم تحديث الخدمة بنجاح' , [{ text: 'حسنا' , onPress: () => navigation.navigate('HomeServices')}]);
+        setSuccessModalVisible(true);
       } catch (error) {
         console.error('Error updating service: ', error);
         Alert.alert('Error', 'Failed to update service');
@@ -176,221 +176,254 @@ const UpdateHomeService = ({ route, navigation }) => {
     }, []);
     
 
+      // Handle modal close and navigate back
+  const handleSuccessModalClose = () => {
+    setSuccessModalVisible(false);
+    navigation.navigate('HomeServices'); // Navigate back to gallery after success
+  };   
+
     return (
-        <KeyboardAvoidingView
+      <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <FlatList
-            keyboardShouldPersistTaps="handled"
-            data={[]}
-            ListHeaderComponent={
-              <>
-                {/* Header */}
-                <Header navigation={navigation} title="تحديث الخدمة المنزلية" route="HomeServices" />
-      
-                <View style={styles.container}>
-                  {/* Input Fields */}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="اسم الخدمة"
-                    value={formData.name}
-                    onChangeText={(value) => handleInputChange('name', value)}
-                  />
-      
-                  <TextInput
-                    style={styles.input}
-                    placeholder="رقم التصنيف"
-                    keyboardType="numeric"
-                    value={item.category?.name || ''}
-                    onChangeText={(value) => handleInputChange('category_id', value)}
-                  />
-      
-                  <TextInput
-                    style={styles.input}
-                    placeholder="رقم التصنيف الفرعي"
-                    keyboardType="numeric"
-                    value={item.sub_category?.name || ''}
-                    onChangeText={(value) => handleInputChange('sub_category_id', value)}
-                  />
-      
-                  <TextInput
-                    style={styles.input}
-                    placeholder="السعر"
-                    keyboardType="decimal-pad"
-                    value={formData.price}
-                    onChangeText={(value) => handleInputChange('price', value)}
-                  />
-      
-                  {/* Discount Switch */}
-                  <View style={styles.discountContainer}>
-                    <Text style={styles.label}>هل يوجد خصم؟</Text>
-                    <Switch
-                      value={formData.discount === 1}
-                      onValueChange={toggleDiscount}
-                      thumbColor={formData.discount === 1 ? '#2f3e3b' : '#ddd'}
-                      trackColor={{ false: '#ddd', true: '#2f3e3b' }}
-                    />
-                  </View>
-      
-                  {formData.discount === 1 && (
-                    <TextInput
-                      style={styles.input}
-                      placeholder="النسبة المئوية"
-                      keyboardType="decimal-pad"
-                      value={formData.percentage}
-                      onChangeText={(value) => handleInputChange('percentage', value)}
-                    />
-                  )}
-      
-                  <TextInput
-                    style={styles.input}
-                    placeholder="عدد النقاط"
-                    keyboardType="numeric"
-                    value={formData.points}
-                    onChangeText={(value) => handleInputChange('points', value)}
-                  />
-      
-                  {/* Gender Selection */}
-                  <View style={styles.radioGroup}>
-                    <Text style={styles.label}>الجنس:</Text>
-                    {['women', 'men'].map((gender) => (
-                      <TouchableOpacity
-                        key={gender}
-                        style={styles.radioButton}
-                        onPress={() => handleInputChange('gender', gender)}
-                      >
-                        <Icon
-                          name={formData.gender === gender ? 'radiobox-marked' : 'radiobox-blank'}
-                          size={20}
-                          color="#f08b47"
-                        />
-                        <Text>{gender === 'women' ? 'نساء' : 'رجال'}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-      
-                  {/* Booking Type Selection */}
-                  <View style={styles.radioGroup}>
-                    <Text style={styles.label}>نوع الحجز:</Text>
-                    {['immediate', 'previous_date'].map((booking_status) => (
-                      <TouchableOpacity
-                        key={booking_status}
-                        style={styles.radioButton}
-                        onPress={() => handleInputChange('booking_status', booking_status)}
-                      >
-                        <Icon
-                          name={formData.booking_status === booking_status ? 'radiobox-marked' : 'radiobox-blank'}
-                          size={20}
-                          color="#f08b47"
-                        />
-                        <Text>{booking_status === 'immediate' ? 'فوري' : 'بموعد مسبق'}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-      
-                  {/* Service Details Section */}
-                  <View style={styles.serviceDetailsContainer}>
-                    <TouchableOpacity 
-                      style={styles.addButton} 
-                      onPress={() => handleAddServiceDetail(newServiceDetail)}
-                    >
-                      <Icon name="plus" size={24} color="#ffffff" />
-                    </TouchableOpacity>
-      
-                    <TextInput
-                      style={[styles.input, { width: '90%' }]}
-                      placeholder="تفاصيل الخدمة"
-                      onChangeText={(text) => setNewServiceDetail(text)} 
-                    />
-                  </View>
-      
-                  {/* Service Details List */}
-                  <FlatList
-                    style={styles.serviceDetailsList}
-                    data={formData.service_details}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item, index }) => (
-                      <View style={styles.detailItem}>
-                        <TouchableOpacity 
-                          style={styles.removeButton} 
-                          onPress={() => handleRemoveServiceDetail(index)}
-                        >
-                          <Icon name="close" size={20} color="#ff0000" />
-                        </TouchableOpacity>
-                        <Text>{item}</Text>
-                      </View>
-                    )}
-                  />
-      
-                  {/* Employee List Section */}
-<View style={styles.employeeListContainer}>
-  <Text style={styles.label}>اختر الموظفين:</Text>
-  <FlatList
-    data={allEmployees}
-    keyExtractor={(employee) => employee.id.toString()}
-    renderItem={({ item }) => (
-      <TouchableOpacity
-        onPress={() => toggleEmployee(item.id)}
-        style={styles.employeeItem}
       >
-        <Icon
-          name={
-            formData.employees.includes(item.id.toString())
-              ? 'checkbox-marked'
-              : 'checkbox-blank-outline'
-          }
-          size={20}
-          color="#f08b47"
-        />
-        <Text>{item.name}</Text>
-      </TouchableOpacity>
-    )}
-  />
-</View>
-
-      
-                  {/* Submit Button */}
-                  <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                    <Text style={styles.submitText}>تحديث الخدمة</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            }
-            keyExtractor={() => "key"} // dummy key extractor
+          <FlatList
+              keyboardShouldPersistTaps="handled"
+              data={[]}
+              ListHeaderComponent={
+                  <>
+                      {/* Header */}
+                      <View style={styles.header}>
+                          <TouchableOpacity onPress={() => navigation.goBack()}>
+                              <Icon name="arrow-left" size={24} color="#000000" />
+                          </TouchableOpacity>
+                          <Text style={styles.headerTitle}>تحديث بيانات الخدمة رقم : {item.id}</Text>
+                      </View>
+  
+                      <View style={styles.container}>
+                          {/* Input Fields */}
+                          <Text style={styles.label}>اسم الخدمة</Text>
+                          <TextInput
+                              style={styles.input}
+                              placeholder="اسم الخدمة"
+                              value={formData.name}
+                              onChangeText={(value) => handleInputChange('name', value)}
+                          />
+  
+                          {/* Category Selector */}
+                          <CategorySelector formData={formData} handleInputChange={handleInputChange} />
+  
+                          <Text style={styles.label}>السعر</Text>
+                          <TextInput
+                              style={styles.input}
+                              placeholder="السعر"
+                              keyboardType="decimal-pad"
+                              value={formData.price}
+                              onChangeText={(value) => handleInputChange('price', value)}
+                          />
+  
+                          {/* Discount Switch */}
+                          <View style={styles.discountContainer}>
+                              <Text style={styles.label}>هل يوجد خصم؟</Text>
+                              <Switch
+                                  value={formData.discount === 1}
+                                  onValueChange={toggleDiscount}
+                                  thumbColor={formData.discount === 1 ? '#2f3e3b' : '#ddd'}
+                                  trackColor={{ false: '#ddd', true: '#2f3e3b' }}
+                              />
+                          </View>
+  
+                          {formData.discount === 1 && (
+                              <>
+                                  <Text style={styles.label}>النسبة المئوية</Text>
+                                  <TextInput
+                                      style={styles.input}
+                                      placeholder="النسبة المئوية"
+                                      keyboardType="decimal-pad"
+                                      value={formData.percentage}
+                                      onChangeText={(value) => handleInputChange('percentage', value)}
+                                  />
+                              </>
+                          )}
+  
+                          <Text style={styles.label}>عدد النقاط</Text>
+                          <TextInput
+                              style={styles.input}
+                              placeholder="عدد النقاط"
+                              keyboardType="numeric"
+                              value={formData.points}
+                              onChangeText={(value) => handleInputChange('points', value)}
+                          />
+  
+                          {/* Gender Selection */}
+                          <View style={styles.radioGroup}>
+                              <Text style={styles.label}>الجنس:</Text>
+                              {['women', 'men'].map((gender) => (
+                                  <TouchableOpacity
+                                      key={gender}
+                                      style={styles.radioButton}
+                                      onPress={() => handleInputChange('gender', gender)}
+                                  >
+                                      <Icon
+                                          name={formData.gender === gender ? 'radiobox-marked' : 'radiobox-blank'}
+                                          size={20}
+                                          color="#435E58"
+                                      />
+                                      <Text style={{fontFamily: 'AlmaraiRegular'}}>{gender === 'women' ? 'نساء' : 'رجال'}</Text>
+                                  </TouchableOpacity>
+                              ))}
+                          </View>
+  
+                          {/* Booking Type Selection */}
+                          <View style={styles.radioGroup}>
+                              <Text style={styles.label}>نوع الحجز:</Text>
+                              {['immediate', 'previous_date'].map((booking_status) => (
+                                  <TouchableOpacity
+                                      key={booking_status}
+                                      style={styles.radioButton}
+                                      onPress={() => handleInputChange('booking_status', booking_status)}
+                                  >
+                                      <Icon
+                                          name={formData.booking_status === booking_status ? 'radiobox-marked' : 'radiobox-blank'}
+                                          size={20}
+                                          color="#435E58"
+                                      />
+                                      <Text style={{fontFamily: 'AlmaraiRegular'}}>{booking_status === 'immediate' ? 'فوري' : 'بموعد مسبق'}</Text>
+                                  </TouchableOpacity>
+                              ))}
+                          </View>
+  
+                          {/* Service Details Section */}
+                          <View style={styles.serviceDetailsContainer}>
+                              <TouchableOpacity
+                                  style={styles.addButton}
+                                  onPress={() => handleAddServiceDetail(newServiceDetail)}
+                              >
+                                  <Icon name="plus" size={24} color="#ffffff" />
+                              </TouchableOpacity>
+  
+                              <TextInput
+                                  style={[styles.input, { width: '90%' }]}
+                                  placeholder="تفاصيل الخدمة"
+                                  onChangeText={(text) => setNewServiceDetail(text)}
+                              />
+                          </View>
+  
+                          {/* Service Details List */}
+                          <FlatList
+                              style={styles.serviceDetailsList}
+                              data={formData.service_details}
+                              keyExtractor={(item, index) => index.toString()}
+                              renderItem={({ item, index }) => (
+                                  <View style={styles.detailItem}>
+                                      <TouchableOpacity
+                                          style={styles.removeButton}
+                                          onPress={() => handleRemoveServiceDetail(index)}
+                                      >
+                                          <Icon name="close" size={20} color="#ff0000" />
+                                      </TouchableOpacity>
+                                      <Text style={{fontFamily: 'AlmaraiRegular'}}>{item}</Text>
+                                  </View>
+                              )}
+                          />
+  
+                          {/* Employee List Section */}
+                          <View style={styles.employeeListContainer}>
+                              <Text style={styles.label}>اختر الموظفين:</Text>
+                              <FlatList
+                                  data={allEmployees}
+                                  keyExtractor={(employee) => employee.id.toString()}
+                                  renderItem={({ item }) => (
+                                      <TouchableOpacity
+                                          onPress={() => toggleEmployee(item.id)}
+                                          style={styles.employeeItem}
+                                      >
+                                          <Icon
+                                              name={
+                                                  formData.employees.includes(item.id.toString())
+                                                      ? 'checkbox-marked'
+                                                      : 'checkbox-blank-outline'
+                                              }
+                                              size={20}
+                                              color="#435E58"
+                                          />
+                                          <Text style={{fontFamily: 'AlmaraiRegular'}}>{item.name}</Text>
+                                      </TouchableOpacity>
+                                  )}
+                              />
+                          </View>
+  
+                          {/* Submit Button */}
+                          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                              <Text style={styles.submitText}>تحديث الخدمة</Text>
+                          </TouchableOpacity>
+                      </View>
+                  </>
+              }
+              keyExtractor={() => "key"} // dummy key extractor
           />
-        </KeyboardAvoidingView>
-      );
-            
+
+          {/* Success Modal */}
+      <SuccessModal
+        visible={successModalVisible}
+        message="تم تحديث الخدمة بنجاح!"
+        buttonText="حسنا"
+        onPress={handleSuccessModalClose}
+      />
+
+      </KeyboardAvoidingView>
+  );
 };
+export default UpdateHomeService;
+
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    borderBottomColor: '#E7E7E7',
+    borderBottomWidth: 1,
+    backgroundColor: '#fff',
+  },
+  headerTitle: {
+    fontSize: 20,
+    color: '#000000',
+    fontFamily: 'AlmaraiBold',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#E7E7E7',
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
     textAlign: 'right',
-    backgroundColor: '#fff',
+    fontFamily: 'AlmaraiRegular',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontFamily: 'AlmaraiBold',
+    color: '#333',
+    textAlign: 'right',
   },
   radioGroup: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
     marginBottom: 15,
+    gap: 20,
   },
   radioButton: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
     marginLeft: 15,
-  },
-  label: {
-    fontSize: 16,
-    marginLeft: 10,
   },
   employeeItem: {
     flexDirection: 'row-reverse',
@@ -398,17 +431,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: '#ddd',
-  },
-  employeeName: {
-    marginRight: 10,
+    gap: 10,
+    fontFamily: 'AlmaraiRegular',
   },
   serviceDetailsContainer: {
     flexDirection: 'row',
   },
   submitButton: {
-    backgroundColor: '#f08b47',
+    backgroundColor: '#435E58',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 20,
@@ -416,13 +448,15 @@ const styles = StyleSheet.create({
   submitText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'AlmaraiBold',
   },
   addButton: {
-    backgroundColor: '#2f3e3b',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#435E58',
     padding: 5,
     borderRadius: 5,
-    height: 40,
+    height: 43,
   },
   serviceDetailsList: {
       marginBottom: 15,
@@ -432,15 +466,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#e7e7e7',
     padding: 10,
     borderRadius: 15,
-  },
-  label: {
-    fontSize: 16,
-    marginLeft: 10,
-    marginVertical: 10,
-    direction: 'rtl',
   },
   discountContainer: {
     flexDirection: 'row',
@@ -450,4 +478,4 @@ const styles = StyleSheet.create({
     direction: 'rtl',
   },
 });
-export default UpdateHomeService;
+

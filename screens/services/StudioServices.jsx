@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // For accessing localStorage
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import StudioServiceCard from '../../components/services/Studio/StudioServiceCard';
-const StudioServices = ({ navigation}) => {
+
+const StudioServices = ({ navigation }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const authToken = await AsyncStorage.getItem('authToken');
-        
         if (!authToken) {
           console.error('Auth token not found');
           setLoading(false);
@@ -29,6 +33,10 @@ const StudioServices = ({ navigation}) => {
         const data = await response.json();
         if (response.ok) {
           setServices(data.data);
+          setFilteredServices(data.data);
+
+          const serviceCategories = data.data.map(service => service.category?.name).filter((value, index, self) => self.indexOf(value) === index);
+          setCategories(['all', ...serviceCategories]);
         } else {
           console.error('Failed to fetch services:', data);
         }
@@ -42,30 +50,95 @@ const StudioServices = ({ navigation}) => {
     fetchServices();
   }, []);
 
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery, services]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setFilteredServices(services);
+    } else {
+      const filtered = services.filter(service =>
+        service?.name?.toLowerCase().includes(query.toLowerCase()) ||
+        service?.description?.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredServices(filtered);
+    }
+  };
+
+  const handleCategoryFilter = (category) => {
+    setActiveCategory(category);
+    if (category === 'all') {
+      setFilteredServices(services);
+    } else {
+      const filtered = services.filter(service => service.category?.name === category);
+      setFilteredServices(filtered);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#f08b47" />
+        <ActivityIndicator size="large" color="#000" />
       </View>
     );
   }
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-right" size={24} color="#ffffff" />
+          <Icon name="chevron-right" size={28} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>خدمات الاستوديو</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddStudioService')}>
-          <Icon name="plus" size={24} color="#ffffff" />
+        <Text style={styles.headerTitle}>خدمات المقر</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('AddStudioService')} style={styles.addButton}>
+          <Icon name="plus" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      {services.length > 0 ? (
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.title}>قائمة خدمات المقر</Text>
+        <Text style={styles.description}>عرض وإدارة قائمة خدمات المقر التي يقدمها عملك</Text>
+
+        <View style={styles.searchContainer}>
+          <Icon name="magnify" size={24} color="#999999" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="بحث عن الخدمة"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+
+        <View style={styles.categoriesContainer}>
+  {categories.map((category, index) => {
+    const serviceCount = category === 'all' ? services.length : 0; // Show count only for "جميع الخدمات"
+
+    return (
+      <TouchableOpacity 
+        key={category} 
+        style={[styles.categoryLink, activeCategory === category && styles.activeCategory]} 
+        onPress={() => handleCategoryFilter(category)}
+      >
+        <Text style={[styles.categoryText, activeCategory === category && styles.activeCategoryText]}>
+          {category === 'all' ? 'جميع الخدمات' : category}  
+        </Text>
+        {index === 0 && ( // Show badge only for the first item
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{serviceCount}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  })}
+</View>
+
+      </View>
+
+      {filteredServices.length > 0 ? (
         <FlatList
-          data={services}
+          data={filteredServices}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <StudioServiceCard navigation={navigation} item={item} />}
           contentContainerStyle={styles.listContainer}
@@ -77,26 +150,46 @@ const StudioServices = ({ navigation}) => {
       )}
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   header: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#2f3e3b',
-    padding: 15,
-    marginTop: 20,
-    direction: 'rtl',
+    paddingHorizontal: 15,
+    paddingTop: 50,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E7E7E7',
   },
   headerTitle: {
     fontSize: 20,
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: '#000000',
+    fontFamily: 'AlmaraiBold',
+  },
+  addButton: {
+    backgroundColor: '#435E58',
+    padding: 8,
+    borderRadius: 50,
+  },
+  descriptionContainer: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 18,
+    fontFamily: 'AlmaraiBold',
+    textAlign: 'right',
+  },
+  description: {
+    fontSize: 14,
+    fontFamily: 'AlmaraiRegular',
+    textAlign: 'right',
+    color: '#999999',
   },
   loadingContainer: {
     flex: 1,
@@ -106,7 +199,6 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
     paddingHorizontal: 10,
-    marginTop: 10,
   },
   emptyContainer: {
     flex: 1,
@@ -117,10 +209,60 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999999',
   },
-  addButton: {
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 20,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 10,
+    fontSize: 14,
+    textAlign: 'right',
+    fontFamily: 'AlmaraiRegular',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: 10,
+  },
+  categoriesContainer: {
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+    marginTop: 10,
+  },
+  categoryLink: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    margin: 5,
+    borderRadius: 50,
+  },
+  activeCategory: {
+    backgroundColor: '#435E58',
+  },
+  categoryText: {
+    fontSize: 15,
+    fontFamily: 'AlmaraiBold',
+  },
+  activeCategoryText: {
+    color: '#fff',
+  },
+  badge: {
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    paddingHorizontal: 8,
+    marginRight: 5,
+  },
+  badgeText: {
+    color: '#000',
+    fontSize: 12,
+    fontFamily: 'AlmaraiBold',
   },
 });
 
-export default StudioServices
+export default StudioServices;

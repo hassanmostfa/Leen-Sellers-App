@@ -33,6 +33,7 @@ import Customers from './screens/chat/Customers';
 import ChatRoom from './screens/chat/ChatRoom';
 import Notifications from './screens/Notifications';
 import More from './screens/More';
+import Profile from './screens/settings/Profile';
 
 // Main App Component
 export default function App() {
@@ -86,6 +87,7 @@ const [loaded] = useFonts({
         <Stack.Screen name="ChatRoom" component={ChatRoom} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="More" component={More} />
+        <Stack.Screen name="Profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

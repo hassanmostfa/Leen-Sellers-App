@@ -1,17 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet , ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ShowHomeService = ({ route, navigation }) => {
   const { item } = route.params; // Access the item passed through navigation
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>تفاصيل الخدمة رقم : {item.id}</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-right" size={24} color="#ffffff" />
+          <Icon name="arrow-left" size={24} color="#000000" />
         </TouchableOpacity>
       </View>
 
@@ -21,37 +21,37 @@ const ShowHomeService = ({ route, navigation }) => {
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>السعر: </Text>
-          <Text>{item.price} ريال</Text>
+          <Text style={styles.detailValue}>{item.price} ريال</Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>التصنيف الاساسي: </Text>
-          <Text>{item.category.name}</Text>
+          <Text style={styles.detailValue}>{item.category.name}</Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>التصنيف الفرعي: </Text>
-          <Text>{item.sub_category.name}</Text> 
+          <Text style={styles.detailValue}>{item.sub_category.name}</Text> 
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>التقييم: </Text>
-          <Text>{item.service_average_rating == 0 ? 'لا يوجد تقييم' : item.service_average_rating}</Text>
+          <Text style={styles.detailValue}>{item.service_average_rating == 0 ? 'لا يوجد تقييم' : item.service_average_rating}</Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>نوع الحجز: </Text>
-          <Text>{item.booking_status === 'immediate' ? 'فوري' : 'بموعد مسبق'}</Text>
+          <Text style={styles.detailValue}>{item.booking_status === 'immediate' ? 'فوري' : 'بموعد مسبق'}</Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>مخصصة لـ: </Text>
-          <Text>{item.gender === 'men' ? 'الرجال' : 'النساء'}</Text>
+          <Text style={styles.detailValue}>{item.gender === 'men' ? 'الرجال' : 'النساء'}</Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}>هل يوجد خصم ؟ </Text>
-          <Text >{item.discount > 0 ? 'نعم' : 'لا'}</Text>
+          <Text style={styles.detailValue} >{item.discount > 0 ? 'نعم' : 'لا'}</Text>
         </View>
         {item.discount > 0 && (
           <View style={styles.detailItem}>
@@ -62,7 +62,7 @@ const ShowHomeService = ({ route, navigation }) => {
 
         <View style={styles.detailItem}>
           <Text style={styles.detailTitle}> هل يوجد نقاط ولاء لهذه الخدمة ؟ </Text>
-          <Text>{item.points>0 ? item.points : 'لا يوجد'}</Text>
+          <Text style={styles.detailValue}>{item.points>0 ? item.points : 'لا يوجد'}</Text>
         </View>
 
         {/* Service Details */}
@@ -82,55 +82,61 @@ const ShowHomeService = ({ route, navigation }) => {
           </Text>
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
     direction: 'rtl',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#2f3e3b',
     padding: 15,
-    marginTop: 20,
+    marginTop: 40,
+    borderBottomColor: '#E7E7E7',
+    borderBottomWidth: 1,
   },
   headerTitle: {
     fontSize: 20,
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: '#000000',
+    fontFamily: 'AlmaraiBold',
   },
   detailsContainer: {
     paddingHorizontal: 20,
-    marginTop: 5,
+    margin: 10,
+    borderRightWidth: 7,
+    borderRightColor: '#435E58',
+    borderRadius: 10,
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'AlmaraiBold',
     marginBottom: 10,
     marginTop: 15,
-    color: '#2f3e3b',
+    color: '#435E58',
   },
   detailItem: {
-    fontSize: 20,
+    fontSize: 18,
     marginBottom: 5,
     paddingBottom: 5,
     color: '#333',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
+    fontFamily: 'AlmaraiRegular',
   },
   detailTitle: {
-    fontWeight: 'bold',
     color: '#555',
-    fontSize: 18,
+    fontFamily: 'AlmaraiBold',
+  },
+  detailValue: {
+    color: '#333',
+    fontFamily: 'AlmaraiRegular', 
   },
 });
 

@@ -81,7 +81,7 @@ const Coupons = ({ navigation }) => {
         <Text style={styles.title}>معاملات الدفع</Text>
         <Text style={styles.description}>
         تتيح لك هذه الصفحة إنشاء كوبونات وعروض خاصة لجذب المزيد من 
-        العملاء وإدارة الكوبونات الحالية بسهولة.        </Text>
+        العملاء وإدارة الكوبونات الحالية بسهولة.</Text>
       </View>
 
       {/* Loading Indicator */}

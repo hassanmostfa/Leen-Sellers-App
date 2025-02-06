@@ -10,9 +10,9 @@ const More = ({ navigation}) => {
     { title: 'صفحات التواصل', icon: 'account-outline' , link: 'Pages'},
     { title: 'الخدمات المنزلية', icon: 'basket-outline' , link: 'HomeServices'},
     { title: 'خدمات المقر', icon: 'store-outline' , link: 'StudioServices'},
-    { title: 'مواعيد العمل', icon: 'calendar-month-outline' , link: 'Timetable'},
+    { title: 'الفريق', icon: 'account-group-outline' , link: 'Employees'},
     { title: 'كوبونات الخصم', icon: 'gift-outline' , link: 'Coupons'},
-    { title: 'الإعدادات', icon: 'cog-outline' , link: 'Settings'},
+    { title: 'الإعدادات', icon: 'cog-outline' , link: 'Profile'},
     { title: 'طرق الدفع', icon: 'credit-card-outline' , link: 'PaymentMethods'},
   ];
 

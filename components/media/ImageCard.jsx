@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 180,
+    width: 120,
     height: 150,
     borderRadius: 12,
     justifyContent: 'flex-start',

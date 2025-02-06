@@ -110,7 +110,7 @@ const Home = () => {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#f08b47" />
+        <ActivityIndicator size="large" color="#435E58" />
       </View>
     );
   }
