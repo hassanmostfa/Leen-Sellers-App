@@ -34,9 +34,24 @@ import ChatRoom from './screens/chat/ChatRoom';
 import Notifications from './screens/Notifications';
 import More from './screens/More';
 import Profile from './screens/settings/Profile';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Main App Component
 export default function App() {
+
+
+// const removeToken = async () => {
+//     try {
+//         await AsyncStorage.removeItem('authToken'); // Replace 'authToken' with your key
+//         console.log('Token removed successfully');
+//     } catch (error) {
+//         console.error('Error removing token:', error);
+//     }
+// };
+
+// // Call the function
+// removeToken();
+
 // Fonts
 const [loaded] = useFonts({
   AlmaraiBold: require('./assets/fonts/Almarai-Bold.ttf'),

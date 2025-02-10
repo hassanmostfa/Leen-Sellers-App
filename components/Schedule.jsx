@@ -8,7 +8,7 @@ const getCurrentWeekDates = () => {
   startOfWeek.setDate(today.getDate() - today.getDay());
 
   const weekDates = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const date = new Date(startOfWeek);
     date.setDate(startOfWeek.getDate() + i);
     weekDates.push({
