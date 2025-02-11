@@ -9,7 +9,7 @@ import Videos from '../../components/profile/Videos';
 import Ratings from '../../components/profile/Ratings';
 const { width } = Dimensions.get('window'); // Get device width
 
-const Profile = () => {
+const Profile = ({ navigation}) => {
     const [data, setData] = useState(null);
     const [activeTab, setActiveTab] = useState('نبذة'); // Default active tab
 
@@ -33,7 +33,7 @@ const Profile = () => {
             }
         };
 
-        fetchData();
+        fetchData();        
     }, []);
 
     // Function to render the active tab content
@@ -68,7 +68,7 @@ const Profile = () => {
             <Text style={styles.name}>{data?.first_name + ' ' + data?.last_name}</Text>
 
             {/* Edit Profile */}
-            <TouchableOpacity style={styles.editProfile}>
+            <TouchableOpacity style={styles.editProfile} onPress={() => navigation.navigate('EditProfile', { data })}>
                 <Icon name="account-edit-outline" size={24} color="#435E58" />
                 <Text style={styles.editText}>تعديل الحساب</Text>
             </TouchableOpacity>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     name: {
         marginTop: 60,
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'AlmaraiBold',
         color: '#000',
     },
     editProfile: {

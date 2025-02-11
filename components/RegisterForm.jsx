@@ -50,10 +50,6 @@ const RegisterForm = ({ phoneNumber, navigation , route }) => {
   };
 
   const handleSubmit = async () => {
-    if (password !== passwordConfirmation) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
 
     if (!serviceType) {
       Alert.alert('Error', 'Please select a service type');

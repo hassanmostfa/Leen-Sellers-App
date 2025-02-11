@@ -191,18 +191,6 @@ const Timetable = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>جدول المواعيد</Text>
-      </View>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          setSelectedTimetable({ day: '', start_time: '', end_time: '' });
-          setModalVisible(true);
-        }}
-      >
-        <Text style={styles.addButtonText}>إضافة يوم عمل</Text>
-      </TouchableOpacity>
       {loading ? (
         <ActivityIndicator size="large" color="#2f3e3b" />
       ) : (
@@ -213,6 +201,17 @@ const Timetable = ({ navigation }) => {
           contentContainerStyle={styles.listContainer}
         />
       )}
+
+<TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          setSelectedTimetable({ day: '', start_time: '', end_time: '' });
+          setModalVisible(true);
+        }}
+      >
+        <Text style={styles.addButtonText}>إضافة يوم عمل</Text>
+      </TouchableOpacity>
+
 
       <Modal
         animationType="slide"
@@ -271,9 +270,6 @@ const Timetable = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-
-      {/* Navigation Tabs */}
-      <TapNavigation navigation={navigation} />
     </View>
   );
 };
@@ -281,24 +277,11 @@ const Timetable = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     direction: 'rtl',
   },
-  header: {
-    backgroundColor: '#2f3e3b',
-    padding: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   addButton: {
-    backgroundColor: '#2f3e3b',
-    padding: 10,
+    backgroundColor: '#435E58',
+    padding: 15,
     margin: 10,
     borderRadius: 8,
     alignItems: 'center',
@@ -306,6 +289,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontFamily: 'AlmaraiBold',
   },
   listContainer: {
     padding: 10,
@@ -318,6 +302,8 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     elevation: 3,
+    borderRightWidth: 7,
+    borderRightColor: '#435E58',
   },
   cardImage: {
     width: 50,
@@ -329,13 +315,14 @@ const styles = StyleSheet.create({
   },
   cardDay: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'AlmaraiBold',
     color: '#2f3e3b',
     marginBottom: 5,
   },
   cardTime: {
     fontSize: 14,
     color: '#777',
+    fontFamily: 'AlmaraiRegular',
   },
   modalContainer: {
     flex: 1,

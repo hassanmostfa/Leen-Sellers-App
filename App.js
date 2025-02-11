@@ -34,6 +34,7 @@ import ChatRoom from './screens/chat/ChatRoom';
 import Notifications from './screens/Notifications';
 import More from './screens/More';
 import Profile from './screens/settings/Profile';
+import EditProfile from './screens/settings/EditProfile';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Main App Component
@@ -103,6 +104,7 @@ const [loaded] = useFonts({
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="More" component={More} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="EditProfile" component={EditProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
