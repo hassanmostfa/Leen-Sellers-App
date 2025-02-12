@@ -8,7 +8,6 @@ const WorkSchedule = () => <Text style={styles.contentText}>محتوى مواع�
 const EditProfile = ({ navigation , route }) => {
     const [activeTab, setActiveTab] = useState('personal');
     const { data } = route.params;
-    console.log(data);
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />

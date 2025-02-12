@@ -13,7 +13,11 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import TapNavigation from '../components/TapNavigation';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Picker } from "@react-native-picker/picker";
+import moment from "moment";
+
+
 const calendarIcon = require('../assets/images/avatars/calendar.png');
 
 const dayTranslations = {
@@ -26,11 +30,53 @@ const dayTranslations = {
   Friday: 'الجمعة',
 };
 
+const formatTime = (time) => {
+  const [hours, minutes] = time.split(':');
+  return new Date(0, 0, 0, hours, minutes - 5).toLocaleTimeString('ar-EG', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // Convert to AM/PM format
+  });
+};
+
 const Timetable = ({ navigation }) => {
   const [timetables, setTimetables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTimetable, setSelectedTimetable] = useState(null);
+  const [startPickerVisible, setStartPickerVisible] = useState(false);
+const [endPickerVisible, setEndPickerVisible] = useState(false);
+
+const showStartPicker = () => setStartPickerVisible(true);
+const hideStartPicker = () => setStartPickerVisible(false);
+const showEndPicker = () => setEndPickerVisible(true);
+const hideEndPicker = () => setEndPickerVisible(false);
+
+const handleConfirmStartTime = (time) => {
+  setSelectedTimetable((prev) => ({
+    ...prev,
+    start_time: moment(time).format("HH:mm"),
+  }));
+  hideStartPicker();
+};
+
+const handleConfirmEndTime = (time) => {
+  setSelectedTimetable((prev) => ({
+    ...prev,
+    end_time: moment(time).format("HH:mm"),
+  }));
+  hideEndPicker();
+};
+
+const weekDays = [
+  { label: 'الأحد', value: 'Sunday' },
+  { label: 'الإثنين', value: 'Monday' },
+  { label: 'الثلاثاء', value: 'Tuesday' },
+  { label: 'الأربعاء', value: 'Wednesday' },
+  { label: 'الخميس', value: 'Thursday' },
+  { label: 'الجمعة', value: 'Friday' },
+  { label: 'السبت', value: 'Saturday' },
+];
 
   const fetchTimetables = async () => {
     setLoading(true);
@@ -170,14 +216,14 @@ const Timetable = ({ navigation }) => {
       <View style={styles.cardContent}>
         <Text style={styles.cardDay}>{dayTranslations[item.day] || item.day}</Text>
         <Text style={styles.cardTime}>
-          من {item.start_time} الي {item.end_time}
+          من {formatTime(item.start_time)} الي {formatTime(item.end_time)}
         </Text>
       </View>
       <View style={styles.cardActions}>
         <TouchableOpacity
           onPress={() => {
-            setSelectedTimetable(item); // Set the selected timetable for editing
-            setModalVisible(true); // Show the modal for editing
+            setSelectedTimetable(item);
+            setModalVisible(true);
           }}
         >
           <Icon name="edit" size={20} color="#2f3e3b" />
@@ -188,7 +234,6 @@ const Timetable = ({ navigation }) => {
       </View>
     </View>
   );
-
   return (
     <View style={styles.container}>
       {loading ? (
@@ -212,64 +257,91 @@ const Timetable = ({ navigation }) => {
         <Text style={styles.addButtonText}>إضافة يوم عمل</Text>
       </TouchableOpacity>
 
-
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {selectedTimetable?.id ? 'تعديل يوم العمل' : 'إضافة يوم عمل'}
-            </Text>
-            <TextInput
-              style={styles.input}
-              placeholder="اليوم (مثل: الأحد)"
-              value={selectedTimetable?.day || ''}
-              onChangeText={(text) =>
-                setSelectedTimetable({ ...selectedTimetable, day: text })
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>
+            {selectedTimetable?.id ? "تعديل يوم العمل" : "إضافة يوم عمل"}
+          </Text>
+
+          {/* Day Selection */}
+          <Text style={styles.label}>اختر اليوم:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedTimetable?.day || ""}
+              onValueChange={(itemValue) =>
+                setSelectedTimetable({ ...selectedTimetable, day: itemValue })
               }
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="وقت البداية (مثل: 09:00)"
-              value={selectedTimetable?.start_time || ''}
-              onChangeText={(text) =>
-                setSelectedTimetable({ ...selectedTimetable, start_time: text })
-              }
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="وقت النهاية (مثل: 17:00)"
-              value={selectedTimetable?.end_time || ''}
-              onChangeText={(text) =>
-                setSelectedTimetable({ ...selectedTimetable, end_time: text })
-              }
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={() => {
-                  selectedTimetable?.id ? updateTimetable() : addWorkDay();
-                }}
-              >
-                <Text style={styles.buttonText}>حفظ</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => {
-                  setModalVisible(false);
-                  setSelectedTimetable(null);
-                }}
-              >
-                <Text style={styles.buttonText}>إلغاء</Text>
-              </TouchableOpacity>
-            </View>
+              style={styles.picker}
+            >
+              {weekDays.map((day) => (
+                <Picker.Item key={day.value} label={day.label} value={day.value} />
+              ))}
+            </Picker>
+          </View>
+
+          {/* Time Pickers */}
+          <Text style={styles.label}>وقت العمل:</Text>
+          <View style={styles.timeRow}>
+            <TouchableOpacity style={styles.timePicker} onPress={showStartPicker}>
+              <Text style={styles.timeText}>
+                {selectedTimetable?.start_time || "اختر وقت البداية"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.timePicker} onPress={showEndPicker}>
+              <Text style={styles.timeText}>
+                {selectedTimetable?.end_time || "اختر وقت النهاية"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Start Time Picker */}
+          <DateTimePickerModal
+            isVisible={startPickerVisible}
+            mode="time"
+            is24Hour={true}
+            onConfirm={handleConfirmStartTime}
+            onCancel={hideStartPicker}
+          />
+
+          {/* End Time Picker */}
+          <DateTimePickerModal
+            isVisible={endPickerVisible}
+            mode="time"
+            is24Hour={true}
+            onConfirm={handleConfirmEndTime}
+            onCancel={hideEndPicker}
+          />
+
+          {/* Buttons */}
+          <View style={styles.modalButtons}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={() => {
+                selectedTimetable?.id ? updateTimetable() : addWorkDay();
+              }}
+            >
+              <Text style={styles.buttonText}>حفظ</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => {
+                setModalVisible(false);
+                setSelectedTimetable(null);
+              }}
+            >
+              <Text style={styles.cancelButtonText}>إلغاء</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </View>
+    </Modal>
     </View>
   );
 };
@@ -326,53 +398,84 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    width: "90%",
+    backgroundColor: "#fff",
     padding: 20,
-    alignItems: 'center',
+    borderRadius: 10,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: "AlmaraiBold",
+    textAlign: "center",
     marginBottom: 10,
   },
-  input: {
-    width: '100%',
-    borderColor: '#ccc',
+  label: {
+    fontSize: 16,
+    fontFamily: "AlmaraiRegular",
+    marginBottom: 5,
+    color: "#333",
+  },
+  pickerContainer: {
     borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+  },
+  timeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  timePicker: {
+    borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
-    marginBottom: 10,
+    width: "45%",
+    alignItems: "center",
+  },
+  timeText: {
+    fontSize: 16,
+    color: "#333",
+    fontFamily: "AlmaraiRegular",
   },
   modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    gap: 10,
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    marginTop: 15,
   },
   saveButton: {
-    backgroundColor: '#2f3e3b',
+    backgroundColor: "#435E58",
     padding: 10,
-    borderRadius: 8,
-    marginRight: 10,
-    flex: 1,
-    alignItems: 'center',
+    borderRadius: 5,
+    width: "45%",
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: '#f08b47',
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#435E58",
     padding: 10,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: 'center',
+    borderRadius: 5,
+    width: "45%",
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
+    fontFamily: "AlmaraiBold",
+  },
+  cancelButtonText: {
+    color: "#435E58",
+    fontFamily: "AlmaraiBold",
   },
   cardActions: {
     flexDirection: 'row',

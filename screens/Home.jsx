@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#333',
     fontFamily: 'AlmaraiBold',
   },

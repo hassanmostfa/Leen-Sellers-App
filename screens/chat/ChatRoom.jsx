@@ -13,6 +13,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ChatImg from '../../assets/images/avatars/chat.png';
 import moment from 'moment';
+import Pusher from 'pusher-js/react-native';
 
 const ChatRoom = ({ route, navigation }) => {
   const { chatRoomId, customer } = route.params;
@@ -32,6 +33,57 @@ const ChatRoom = ({ route, navigation }) => {
       }, 500);
     }
   }, [messages]);
+
+  useEffect(() => {
+    const setupPusher = async () => {
+      try {
+        const authToken = await AsyncStorage.getItem('authToken');
+        if (!authToken) {
+          console.error('No auth token found!');
+          return;
+        }
+
+        Pusher.logToConsole = true;
+
+        const pusher = new Pusher('02c14683a1bbc058e455', {
+          cluster: 'eu',
+          authEndpoint: 'https://leen-app.com/public/api/broadcasting/auth',
+          auth: {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        });
+
+        pusher.connection.bind('connected', () => {
+          console.log('Pusher Connected');
+        });
+
+        const channel = pusher.subscribe(`private-chat-room.${chatRoomId}`);
+
+        channel.bind('new-message', (data) => {
+          console.log('New message received:', data);
+          
+          if (!data || !data.message) {
+            console.error('Invalid message data:', data);
+            return;
+          }
+
+          setMessages((prevMessages) => [...prevMessages, data.message]);
+        });
+
+        return () => {
+          channel.unbind_all();
+          channel.unsubscribe();
+          pusher.disconnect();
+        };
+      } catch (error) {
+        console.error('Error setting up Pusher:', error);
+      }
+    };
+
+    setupPusher();
+  }, [chatRoomId]);
 
   const fetchMessages = async () => {
     try {
@@ -62,6 +114,9 @@ const ChatRoom = ({ route, navigation }) => {
   };
 
   const renderMessage = ({ item, index }) => {
+    console.log("Rendering message:", item);
+    if (!item || !item.message) return null;
+
     const isSender = item.sender_type === "App\\Models\\Sellers\\Seller";
     const currentMessageDate = moment(item.created_at).format('YYYY-MM-DD');
     const previousMessageDate = index > 0 ? moment(messages[index - 1].created_at).format('YYYY-MM-DD') : null;
@@ -83,7 +138,7 @@ const ChatRoom = ({ route, navigation }) => {
           <Text style={isSender ? styles.messageText : styles.receivedMessageText}>
             {item.message}
           </Text>
-        </View>
+        </View> 
       </>
     );
   };
@@ -131,12 +186,13 @@ const ChatRoom = ({ route, navigation }) => {
 
       {/* Messages */}
       <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderMessage}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })} // Auto-scroll on load
-      />
+      ref={flatListRef}
+      data={messages}
+      renderItem={renderMessage}
+      keyExtractor={(item, index) => item.id ? item.id.toString() : `message-${index}`}
+      onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+    />
+
 
       {/* Message Input */}
       <View style={styles.inputContainer}>
@@ -146,7 +202,6 @@ const ChatRoom = ({ route, navigation }) => {
           value={newMessage}
           onChangeText={setNewMessage}
         />
-
         <TouchableOpacity onPress={sendMessage}>
           <Icon name="send-circle" size={45} color="#56766F" />
         </TouchableOpacity>
@@ -154,6 +209,9 @@ const ChatRoom = ({ route, navigation }) => {
     </View>
   );
 };
+
+export default ChatRoom;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -232,4 +290,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatRoom;
