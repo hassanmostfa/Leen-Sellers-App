@@ -8,13 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const More = ({ navigation}) => {
   const menuItems = [
     { title: 'الرئيسية', icon: 'home-outline' , link: 'Home'},
-    { title: 'صفحات التواصل', icon: 'account-outline' , link: 'Pages'},
+    // { title: 'صفحات التواصل', icon: 'account-outline' , link: 'Pages'},
+    { title: 'الفريق', icon: 'account-group-outline' , link: 'Employees'},
     { title: 'الخدمات المنزلية', icon: 'basket-outline' , link: 'HomeServices'},
     { title: 'خدمات المقر', icon: 'store-outline' , link: 'StudioServices'},
-    { title: 'الفريق', icon: 'account-group-outline' , link: 'Employees'},
     { title: 'كوبونات الخصم', icon: 'gift-outline' , link: 'Coupons'},
     { title: 'الإعدادات', icon: 'cog-outline' , link: 'Profile'},
-    { title: 'طرق الدفع', icon: 'credit-card-outline' , link: 'PaymentMethods'},
+    // { title: 'طرق الدفع', icon: 'credit-card-outline' , link: 'PaymentMethods'},
   ];
 
 
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   card: {
     width: '48%',
@@ -207,6 +207,7 @@ const styles = StyleSheet.create({
     borderColor: "#E7E7E7",
     borderRadius: 10, // Rounded corners
     overflow: "hidden", // Ensures rounded edges apply correctly
+    marginHorizontal: 20,
   },
   languageCard: {
     flexDirection: "row",

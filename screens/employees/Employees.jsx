@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 20,
     fontFamily: 'AlmaraiBold',
+    textAlign: 'right',
   },
   headerIcons: {
     flexDirection: 'row',
@@ -234,6 +235,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     fontFamily: 'AlmaraiBold',
+    textAlign: 'right',
   },
   cardPosition: {
     fontSize: 14,

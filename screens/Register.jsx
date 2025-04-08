@@ -147,18 +147,12 @@ const Register = ({ navigation }) => {
             )}
           </Pressable>
 
-            {/* Temporary Button for Testing */}
-          <Button
-            title="go"
-            onPress={() => navigation.navigate('RegisterForm')}
-          />
-
         </>
       ) : (
         // OTP Input for Verification
         <>
           <Text style={styles.title}>التحقق من الرمز</Text>
-          <Text style={styles.subtitle}>أدخل رمز التحقق المرسل إلى رقم هاتفك أو بريدك الإلكتروني.</Text>
+          <Text style={styles.subtitle}>أدخل رمز التحقق المرسل إلى رقم هاتفك .</Text>
 
           {/* OTP Input */}
           <View style={styles.otpContainer}>
@@ -195,10 +189,6 @@ const Register = ({ navigation }) => {
         ستنتهي صلاحية الرمز خلال : 01:30 دقيقة
       </Text>
 
-      <Text style={styles.footerText}>
-        لم يصلك الرمز؟ أعد الإرسال
-      </Text>
-
       {/* Success Card */}
       <Modal
         visible={isVerified}
@@ -208,7 +198,7 @@ const Register = ({ navigation }) => {
         <View style={styles.overlay}>
           <View style={styles.successCard}>
             {/* Success Icon */}
-            <Icon name="check-circle" size={60} color="#4CAF50" />
+            <Icon name="check-circle" size={60} color="#435E58" />
             {/* Title */}
             <Text style={styles.successTitle}>تم التحقق من الرمز بنجاح!</Text>
             {/* Subtitle */}
@@ -232,7 +222,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 20,
+    justifyContent: 'center',
+    paddingHorizontal: 25,
     paddingTop: 50,
   },
   title: {
@@ -253,6 +244,7 @@ const styles = StyleSheet.create({
     color: '#000',
     marginBottom: 20,
     fontFamily: 'AlmaraiRegular',
+    textAlign: 'right',
   },
   phoneContainer: {
     flexDirection: 'row',
@@ -262,6 +254,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     marginBottom: 15,
+    marginHorizontal: 10,
   },
   countryCodeContainer: {
     flexDirection: 'row',
@@ -298,19 +291,18 @@ const styles = StyleSheet.create({
   },
   otpContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 30,
   },
   otpInput: {
-    width: 50,
-    height: 50,
+    width: 40,
     borderWidth: 2,
     borderColor: '#E7E7E7',
     borderRadius: 10,
     textAlign: 'center',
-    fontSize: 18,
     fontFamily: 'AlmaraiRegular',
+    marginHorizontal: 10,
   },
   button: {
     backgroundColor: '#435E58',

@@ -101,12 +101,12 @@ const Login = ({ navigation }) => {
       </View>
 
       {/* Forget Password */}
-      <Pressable
+      {/* <Pressable
         onPress={() => navigation.navigate('#')}
         style={styles.forgetPasswordContainer}
       >
         <Text style={styles.forgetPasswordText}>نسيت كلمة المرور؟</Text>
-      </Pressable>
+      </Pressable> */}
 
       {/* Login Button */}
       <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
@@ -115,27 +115,6 @@ const Login = ({ navigation }) => {
         ) : (
           <Text style={styles.buttonText}>تسجيل الدخول</Text>
         )}
-      </Pressable>
-
-      {/* Divider with "أو" */}
-      <View style={styles.dividerContainer}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>أو</Text>
-        <View style={styles.dividerLine} />
-      </View>
-
-      {/* Login with Google */}
-      <Pressable style={styles.socialButton}>
-        {/* <Icon name="google-plus" size={24} color="#DB4437" /> */}
-        <Image source={googleIcon} style={styles.socialButtonImage} />
-        <Text style={styles.socialButtonText}>تسجيل الدخول باستخدام</Text>
-      </Pressable>
-
-      {/* Login with Facebook */}
-      <Pressable style={styles.socialButton}>
-        {/* <Icon name="facebook" size={24} color="#4267B2" /> */}
-        <Image source={facebookIcon} style={styles.socialButtonImage} />
-        <Text style={styles.socialButtonText}>تسجيل الدخول باستخدام</Text>
       </Pressable>
 
       {/* Footer Text */}
@@ -156,15 +135,15 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 50,
+    justifyContent: 'center',
+    paddingHorizontal: 25, // ✅ ضبط المسافات الجانبية العامة
   },
   title: {
     fontSize: 20,
     color: 'black',
     marginBottom: 30,
     fontFamily: 'AlmaraiBold',
+    textAlign: 'center',
   },
   label: {
     alignSelf: 'flex-end',
@@ -172,6 +151,9 @@ const styles = StyleSheet.create({
     color: '#000',
     marginBottom: 10,
     fontFamily: 'AlmaraiRegular',
+    textAlign: 'right', // ✅ محاذاة النصوص إلى اليمين
+    alignSelf: 'stretch', // ✅ جعل العناوين تمتد على عرض العنصر بالكامل
+    marginHorizontal: 10, // ✅ ضبط المسافات الجانبية مثل الحقول
   },
   input: {
     backgroundColor: 'transparent',
@@ -184,15 +166,18 @@ const styles = StyleSheet.create({
     borderColor: '#E7E7E7',
     borderWidth: 2,
     fontFamily: 'AlmaraiRegular',
+    textAlign: 'right',
+    marginHorizontal: 10, // ✅ ضبط المسافة الجانبية للحقل
   },
   passwordContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     width: '100%',
     borderColor: '#E7E7E7',
     borderWidth: 2,
     borderRadius: 10,
     marginBottom: 15,
+    marginHorizontal: 10, // ✅ ضبط المسافة الجانبية لحقل كلمة المرور
   },
   passwordInput: {
     flex: 1,
@@ -200,13 +185,15 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     fontFamily: 'AlmaraiRegular',
+    textAlign: 'right',
   },
   eyeIcon: {
     padding: 10,
   },
   forgetPasswordContainer: {
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end', // ✅ جعل الزر بمحاذاة اليمين تمامًا
     marginBottom: 20,
+    marginRight: 10, // ✅ إضافة مسافة من اليمين
   },
   forgetPasswordText: {
     color: 'rgba(93, 93, 93, 1)',
@@ -220,7 +207,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%',
     alignItems: 'center',
-    marginBottom: 20,
+    margin: 20,
+    marginHorizontal: 10, // ✅ ضبط المسافة الجانبية للزر
   },
   buttonText: {
     color: '#fff',
@@ -265,9 +253,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: '#5D5D5D',
-    marginTop: 100,
+    marginTop: 30,
     fontSize: 14,
     fontFamily: 'AlmaraiRegular',
+    textAlign: 'center',
   },
   link: {
     color: '#1485FD',
